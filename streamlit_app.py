@@ -13,7 +13,7 @@ def clean_text(text):
 
 
 st.title("Hello, This is Rosita!")
-st.write("This is your GenAI-powered data processing app.")
+st.write("This is my data processing app.")
 
 # Layout two buttons side by side
 col1, col2 = st.columns(2)
