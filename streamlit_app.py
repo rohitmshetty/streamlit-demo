@@ -3,6 +3,16 @@ import streamlit as st
 import pandas as pd
 import re
 import os
+import altair as alt
+
+
+# Helper function to get dataset path
+def get_dataset_path():
+    # Get the current script directory
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # Construct the path to the CSV file
+    csv_path = os.path.join(current_dir, "..", "..", "data", "customer_reviews.csv")
+    return csv_path
 
 
 # Helper function to clean text
@@ -12,8 +22,8 @@ def clean_text(text):
     return text
 
 
-st.title("Hello, This is Rosita!")
-st.write("This is my data processing app.")
+st.title("Hello, GenAI!")
+st.write("This is your GenAI-powered data processing app.")
 
 # Layout two buttons side by side
 col1, col2 = st.columns(2)
@@ -21,7 +31,8 @@ col1, col2 = st.columns(2)
 with col1:
     if st.button("📥 Ingest Dataset"):
         try:
-            st.session_state["df"] = pd.read_csv("customer_reviews.csv")
+            csv_path = get_dataset_path()
+            st.session_state["df"] = pd.read_csv(csv_path)
             st.success("Dataset loaded successfully!")
         except FileNotFoundError:
             st.error("Dataset not found. Please check the file path.")
@@ -47,7 +58,18 @@ if "df" in st.session_state:
         filtered_df = st.session_state["df"]
     st.dataframe(filtered_df)
     
-    st.subheader("Sentiment Score by Product")
-    grouped = st.session_state["df"].groupby(["PRODUCT"])["SENTIMENT_SCORE"].mean()
-    st.bar_chart(grouped)
-
+    st.subheader(f"Sentiment Score Distribution for {product}")
+    # Create Altair histogram using add_params instead of add_selection
+    interval = alt.selection_interval()
+    chart = alt.Chart(filtered_df).mark_bar().add_params(
+        interval
+    ).encode(
+        alt.X("SENTIMENT_SCORE:Q", bin=alt.Bin(maxbins=10), title="Sentiment Score"),
+        alt.Y("count():Q", title="Frequency"),
+        tooltip=["count():Q"]
+    ).properties(
+        width=600,
+        height=400,
+        title="Distribution of Sentiment Scores"
+    )
+    st.altair_chart(chart, use_container_width=True)
