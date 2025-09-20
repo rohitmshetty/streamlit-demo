@@ -12,7 +12,7 @@ def clean_text(text):
     return text
 
 
-st.title("Hello, GenAI!")
+st.title("Hello, This is Rosita!")
 st.write("This is your GenAI-powered data processing app.")
 
 # Layout two buttons side by side
@@ -50,3 +50,4 @@ if "df" in st.session_state:
     st.subheader("Sentiment Score by Product")
     grouped = st.session_state["df"].groupby(["PRODUCT"])["SENTIMENT_SCORE"].mean()
     st.bar_chart(grouped)
+
